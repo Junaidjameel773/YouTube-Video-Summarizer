@@ -53,12 +53,13 @@ def generate_gemini_content(transcript_text,prompt):
 st.title("YouTube Transcript to Detailed Notes Converter")
 youtube_link = st.text_input("Enter YouTube Video Link:")
 
-if youtube_link:
-    video_id = get_video_id(youtube_link)
-    print(video_id)
-    st.image(f"http://img.youtube.com/vi/{video_id}/0.jpg", use_container_width=True)
+video_id = get_video_id(youtube_link) if youtube_link else None
+if youtube_link and not video_id:
+    st.error("Could not find a video ID in that link.")
+if video_id:
+    st.image(f"https://img.youtube.com/vi/{video_id}/0.jpg", use_container_width=True)
 
-if st.button("Get Detailed Notes"):
+if st.button("Get Detailed Notes") and video_id:
     transcript_text=extract_transcript_details(youtube_link)
 
     if transcript_text:
