@@ -53,5 +53,5 @@ Context Window: Gemma 3 has a 128k context window, but long-term memory within t
 ```
 
 ## License
-This project is open-source and available for modification and distribution.
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
 
