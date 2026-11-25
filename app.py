@@ -6,6 +6,7 @@ import os
 import google.generativeai as genai
 
 from youtube_transcript_api import YouTubeTranscriptApi
+from urllib.parse import urlparse, parse_qs
 
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
@@ -14,10 +15,22 @@ and summarizing the entire video and providing the important summary in points
 within 250 words. Please provide the summary of the text given here:  """
 
 
+## extract the video id from watch, youtu.be, shorts and embed links
+def get_video_id(url):
+    url = url.strip()
+    if "://" not in url:
+        url = "https://" + url
+    u = urlparse(url)
+    if u.hostname == "youtu.be":
+        return u.path.lstrip("/").split("/")[0] or None
+    if u.path.startswith(("/shorts/", "/embed/")):
+        return u.path.split("/")[2] or None
+    return parse_qs(u.query).get("v", [None])[0]
+
 ## getting the transcript data from yt videos
 def extract_transcript_details(youtube_video_url):
     try:
-        video_id=youtube_video_url.split("=")[1]
+        video_id=get_video_id(youtube_video_url)
         
         transcript_text=YouTubeTranscriptApi.get_transcript(video_id)
 
@@ -41,7 +54,7 @@ st.title("YouTube Transcript to Detailed Notes Converter")
 youtube_link = st.text_input("Enter YouTube Video Link:")
 
 if youtube_link:
-    video_id = youtube_link.split("=")[1]
+    video_id = get_video_id(youtube_link)
     print(video_id)
     st.image(f"http://img.youtube.com/vi/{video_id}/0.jpg", use_container_width=True)
 
